@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../services/cloudinary.js";
+import Blog from "../models/Blog.js";
 
 import {
     createBlog,
@@ -30,6 +31,16 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 const router = Router();
+
+router.get("/", async (req, res) => {
+    try {
+        const blogs = await Blog.find().sort({ createdAt: -1 }); // newest first
+        res.status(200).json({ blogs });
+    } catch (err) {
+        console.error("Error fetching blogs:", err);
+        res.status(500).json({ error: "Failed to fetch blogs" });
+    }
+});
 
 router.post("/", upload.single("coverImage"), createBlog);
 router.get("/:id", getBlogById);

@@ -6,6 +6,17 @@ import { generateOTP, generateExpiry } from "../services/otpService.js";
 import { sendOTPEmail } from "../services/mailer.js";
 import crypto from "crypto";
 import cloudinary from "../services/cloudinary.js";
+import { createTokenForUser } from "../services/authentication.js";
+
+export async function getCurrentUser(req, res) 
+{
+    if (!req.user) 
+    {
+        return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    return res.json({ user: req.user });
+}
 
 export async function signup(req, res) 
 {
@@ -73,8 +84,27 @@ export async function verifyOtp(req, res)
             isEmailVerified: true,
         });
 
+        const token = createTokenForUser(newUser);
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        });
+
         await OTP.deleteOne({ email });
-        return res.status(201).json({ message: "User created successfully" });
+        return res.status(201).json({
+            message: "User created successfully",
+            token,
+            user: {
+                _id: newUser._id,
+                fullName: newUser.fullName,
+                email: newUser.email,
+                profileImageURL: newUser.profileImageURL,
+                role: newUser.role,
+            },
+        });
     } 
     catch (err) 
     {
@@ -133,12 +163,23 @@ export async function login(req, res)
         const token = await User.matchPasswordAndGenerateToken(email, password);
 
         res.cookie("token", token, {
-            httpOnly: true,
-            sameSite: "Lax",
-            secure: process.env.NODE_ENV === "production",
+            httpOnly: true,      // Secure against XSS
+            secure: false,
+            sameSite: "Strict",  // Prevent CSRF
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
-        return res.status(200).json({ message: "Login successful", user });
+        return res.status(200).json({
+            message: "Login successful",
+            token, // Send token to frontend
+            user: {
+                _id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                profileImageURL: user.profileImageURL,
+                role: user.role,
+            },
+        });
     } 
     catch (err) 
     {
@@ -148,7 +189,11 @@ export async function login(req, res)
 
 export function logout(req, res) 
 {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "Strict",
+        secure: process.env.NODE_ENV === "production",
+    });
     return res.status(200).json({ message: "Logged out successfully" });
 }
 

@@ -3,8 +3,10 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../services/cloudinary.js";
 import { restrictToSelf } from "../middlewares/auth.js";
+import { checkForAuthenticationCookie } from "../middlewares/auth.js";
 
 import {
+    getCurrentUser,
     signup,
     verifyOtp,
     resendOtp,
@@ -33,6 +35,8 @@ router.post("/verify-otp", verifyOtp);
 router.post("/resend-otp", resendOtp);
 router.post("/login", login);
 router.post("/logout", logout);
+
+router.get("/me", checkForAuthenticationCookie("token"), getCurrentUser);
 
 router.get("/public/:username", getPublicProfile);
 router.get("/profile/:id", restrictToSelf("id"), getProfile);
