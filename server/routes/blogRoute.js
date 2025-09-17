@@ -2,9 +2,10 @@ import { Router } from "express";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../services/cloudinary.js";
-import Blog from "../models/Blog.js";
+import Blog from "../models/blog.js";
 
 import {
+    searchBlogs,
     createBlog,
     getBlogById,
     addComment,
@@ -42,6 +43,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/search", searchBlogs);
 router.post("/", upload.single("coverImage"), createBlog);
 router.get("/:id", getBlogById);
 router.put("/:id", restrictToBlogOwnerOrAdmin("id"), upload.single("coverImage"), updateBlog);

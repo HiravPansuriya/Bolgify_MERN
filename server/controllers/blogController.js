@@ -3,21 +3,43 @@ import Comment from "../models/comment.js";
 import mongoose from "mongoose";
 import cloudinary from "../services/cloudinary.js";
 
-export async function createBlog(req, res) 
-{
-    if (!req.user || !req.user._id) 
-    {
+export const searchBlogs = async (req, res) => {
+    try {
+        const { query = "", page = 1 } = req.query;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        const blogs = await Blog.find({
+            title: { $regex: query, $options: "i" } // case-insensitive search
+        })
+            .skip(skip)
+            .limit(limit);
+
+        const totalBlogs = await Blog.countDocuments({
+            title: { $regex: query, $options: "i" }
+        });
+
+        res.json({
+            blogs,
+            totalPages: Math.ceil(totalBlogs / limit),
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+export async function createBlog(req, res) {
+    if (!req.user || !req.user._id) {
         return res.status(401).json({ error: "Unauthorized: You must be logged in to create a blog." });
     }
-    
-    try 
-    {
+
+    try {
         const { title, body } = req.body;
         let coverImageURL = null;
         let coverImagePublicId = null;
 
-        if (req.file) 
-        {
+        if (req.file) {
             coverImageURL = req.file.path;
             coverImagePublicId = req.file.filename;
         }
@@ -31,22 +53,18 @@ export async function createBlog(req, res)
         });
 
         return res.status(201).json({ blog: newBlog });
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
         console.error("Create Blog Error:", error);
         return res.status(500).json({ error: "Failed to create blog" });
     }
 }
 
-export async function getBlogById(req, res) 
-{
-    try 
-    {
+export async function getBlogById(req, res) {
+    try {
         const { id } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) 
-        {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: "Invalid blog ID" });
         }
 
@@ -56,30 +74,25 @@ export async function getBlogById(req, res)
         if (!blog) return res.status(404).json({ error: "Blog not found" });
 
         return res.status(200).json({ blog, comments });
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
         console.error("Fetch Blog Error:", error);
         return res.status(500).json({ error: "Failed to fetch blog" });
     }
 }
 
-export async function updateBlog(req, res) 
-{
-    try 
-    {
+export async function updateBlog(req, res) {
+    try {
         const { title, body } = req.body;
         const blog = await Blog.findById(req.params.id);
 
-        if(!blog) return res.status(404).json({ error: "Blog not found" });
+        if (!blog) return res.status(404).json({ error: "Blog not found" });
 
         blog.title = title || blog.title;
         blog.body = body || blog.body;
 
-        if(req.file) 
-        {
-            if(blog.coverImagePublicId) 
-            {
+        if (req.file) {
+            if (blog.coverImagePublicId) {
                 await cloudinary.uploader.destroy(blog.coverImagePublicId);
             }
             blog.coverImageURL = req.file.path;
@@ -89,38 +102,32 @@ export async function updateBlog(req, res)
         await blog.save();
 
         return res.status(200).json({ blog });
-    } 
-    catch(error) 
-    {
+    }
+    catch (error) {
         console.error("Update Blog Error:", error);
         return res.status(500).json({ error: "Failed to update blog" });
     }
 }
 
-export async function deleteBlog(req, res) 
-{
-    try 
-    {
+export async function deleteBlog(req, res) {
+    try {
         const blog = await Blog.findById(req.params.id);
-        if(!blog) return res.status(404).json({ error: "Blog not found" });
-        
+        if (!blog) return res.status(404).json({ error: "Blog not found" });
+
         await cloudinary.uploader.destroy(blog.coverImagePublicId);
         await Blog.findByIdAndDelete(req.params.id);
         await Comment.deleteMany({ blogId: req.params.id });
 
         return res.status(200).json({ message: "Blog deleted" });
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
         console.error("Delete Blog Error:", error);
         return res.status(500).json({ error: "Failed to delete blog" });
     }
 }
 
-export async function likeOrUnlikeBlog(req, res) 
-{
-    try 
-    {
+export async function likeOrUnlikeBlog(req, res) {
+    try {
         const blog = await Blog.findById(req.params.id);
         const userId = req.user._id;
 
@@ -128,12 +135,10 @@ export async function likeOrUnlikeBlog(req, res)
 
         const liked = blog.likes.includes(userId);
 
-        if (liked) 
-        {
+        if (liked) {
             blog.likes.pull(userId);
-        } 
-        else 
-        {
+        }
+        else {
             blog.likes.push(userId);
         }
 
@@ -143,38 +148,31 @@ export async function likeOrUnlikeBlog(req, res)
             liked: !liked,
             likesCount: blog.likes.length,
         });
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
         console.error("Like Blog Error:", error);
         return res.status(500).json({ error: "Failed to like/unlike blog" });
     }
 }
 
-export async function addComment(req, res) 
-{
-    if (!req.user || !req.user._id) 
-    {
+export async function addComment(req, res) {
+    if (!req.user || !req.user._id) {
         return res.status(401).json({ error: "Unauthorized: You must be logged in to comment." });
     }
 
-    try 
-    {
+    try {
         const { content, parentComment } = req.body;
         const blogId = req.params.id;
 
         const blog = await Blog.findById(blogId);
-        if(!blog) 
-        {
+        if (!blog) {
             return res.status(404).json({ error: "Blog not found" });
         }
 
         let parent = null;
-        if(parentComment) 
-        {
+        if (parentComment) {
             parent = await Comment.findById(parentComment);
-            if(!parent) 
-            {
+            if (!parent) {
                 return res.status(400).json({ error: "Parent comment not found" });
             }
         }
@@ -187,18 +185,15 @@ export async function addComment(req, res)
         });
 
         return res.status(201).json({ comment: newComment });
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
         console.error("Add Comment Error:", error);
         return res.status(500).json({ error: "Failed to add comment" });
     }
 }
 
-export async function updateComment(req, res) 
-{
-    try 
-    {
+export async function updateComment(req, res) {
+    try {
         const comment = await Comment.findById(req.params.id);
         if (!comment) return res.status(404).json({ error: "Comment not found" });
 
@@ -206,26 +201,22 @@ export async function updateComment(req, res)
         await comment.save();
 
         return res.status(200).json({ comment });
-    } 
-    catch (error)
-    {
+    }
+    catch (error) {
         console.error("Update Comment Error:", error);
         return res.status(500).json({ error: "Failed to update comment" });
     }
 }
 
-export async function deleteComment(req, res) 
-{
-    try 
-    {
+export async function deleteComment(req, res) {
+    try {
         const comment = await Comment.findById(req.params.id);
         if (!comment) return res.status(404).json({ error: "Comment not found" });
 
         await Comment.findByIdAndDelete(req.params.id);
         return res.status(200).json({ message: "Comment deleted" });
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
         console.error("Delete Comment Error:", error);
         return res.status(500).json({ error: "Failed to delete comment" });
     }
