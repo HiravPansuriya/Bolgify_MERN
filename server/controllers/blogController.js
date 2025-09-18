@@ -3,6 +3,19 @@ import Comment from "../models/comment.js";
 import mongoose from "mongoose";
 import cloudinary from "../services/cloudinary.js";
 
+export async function getAllBlogs(req, res) {
+    try {
+        const blogs = await Blog.find()
+            .sort({ createdAt: -1 }) // newest first
+            .populate("createdBy", "username email"); // include author details
+
+        return res.status(200).json({ blogs });
+    } catch (error) {
+        console.error("Error fetching blogs:", error);
+        return res.status(500).json({ error: "Failed to fetch blogs" });
+    }
+}
+
 export const searchBlogs = async (req, res) => {
     try {
         const { query = "", page = 1 } = req.query;
@@ -152,6 +165,29 @@ export async function likeOrUnlikeBlog(req, res) {
     catch (error) {
         console.error("Like Blog Error:", error);
         return res.status(500).json({ error: "Failed to like/unlike blog" });
+    }
+}
+
+export async function getCommentById(req, res) {
+    try {
+        const { id } = req.params;
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Invalid comment ID" });
+        }
+
+        // Find comment by ID and populate user
+        const comment = await Comment.findById(id).populate("createdBy", "username email");
+
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+
+        return res.status(200).json({ comment });
+    } catch (error) {
+        console.error("Get Comment Error:", error);
+        return res.status(500).json({ error: "Failed to fetch comment" });
     }
 }
 

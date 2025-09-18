@@ -77,7 +77,7 @@ export async function verifyOtp(req, res)
             return res.status(400).json({ error: "OTP expired" });
         }
 
-        await User.create({
+        const newUser = await User.create({
             fullName: record.fullName,
             email: record.email,
             password: record.hashedPassword,
