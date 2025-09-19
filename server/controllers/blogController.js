@@ -220,6 +220,9 @@ export async function addComment(req, res) {
             parentComment: parent ? parent._id : null,
         });
 
+        const populatedComment = await Comment.findById(newComment._id)
+            .populate("createdBy", "username profileImage");
+
         return res.status(201).json({ comment: newComment });
     }
     catch (error) {
