@@ -20,6 +20,7 @@ import {
 import {
     restrictToBlogOwnerOrAdmin,
     restrictToCommentOwnerOrAdmin,
+    requireAuth,
 } from "../middlewares/auth.js";
 
 const storage = new CloudinaryStorage({
@@ -34,17 +35,17 @@ const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 const router = Router();
 
-router.get("/", getAllBlogs);
-router.get("/search", searchBlogs);
-router.post("/", upload.single("coverImage"), createBlog);
-router.get("/:id", getBlogById);
-router.put("/:id", restrictToBlogOwnerOrAdmin("id"), upload.single("coverImage"), updateBlog);
-router.delete("/:id", restrictToBlogOwnerOrAdmin("id"), deleteBlog);
-router.post("/:id/like", likeOrUnlikeBlog);
+router.get("/", requireAuth, getAllBlogs);
+router.get("/search", requireAuth, searchBlogs);
+router.post("/", requireAuth, upload.single("coverImage"), createBlog);
+router.get("/:id", requireAuth, getBlogById);
+router.put("/:id", requireAuth, restrictToBlogOwnerOrAdmin("id"), upload.single("coverImage"), updateBlog);
+router.delete("/:id", requireAuth, restrictToBlogOwnerOrAdmin("id"), deleteBlog);
+router.post("/:id/like", requireAuth, likeOrUnlikeBlog);
 
-router.get("/comment/:id", getCommentById);
-router.post("/comment/:id", addComment);
-router.put("/comment/:id", restrictToCommentOwnerOrAdmin("id"), updateComment);
-router.delete("/comment/:id", restrictToCommentOwnerOrAdmin("id"), deleteComment);
+router.get("/comment/:id", requireAuth, getCommentById);
+router.post("/comment/:id", requireAuth, addComment);
+router.put("/comment/:id", requireAuth, restrictToCommentOwnerOrAdmin("id"), updateComment);
+router.delete("/comment/:id", requireAuth, restrictToCommentOwnerOrAdmin("id"), deleteComment);
 
 export default router;

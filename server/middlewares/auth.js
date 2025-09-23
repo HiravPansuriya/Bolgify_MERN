@@ -3,6 +3,13 @@ import User from "../models/user.js";
 import Blog from "../models/blog.js";
 import Comment from "../models/comment.js";
 
+export function requireAuth(req, res, next) {
+    if (!req.user) {
+        return res.status(401).json({ error: "Authentication required." });
+    }
+    next();
+}
+
 export function checkForAuthenticationCookie(cookieName) 
 {
     return async(req, res, next) => {
