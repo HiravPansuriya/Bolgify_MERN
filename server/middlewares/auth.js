@@ -62,7 +62,7 @@ export function restrictTo( roles)
 
 export function redirectIfAuthenticated(req, res, next) 
 {
-    if (req.user) 
+    if(req.user) 
     {
         // return res.redirect("/");
         return res.status(400).json({ error: "Already logged in." });

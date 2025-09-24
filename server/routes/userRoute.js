@@ -35,7 +35,7 @@ router.use(checkForAuthenticationCookie("token"));
 router.post("/signup", redirectIfAuthenticated, signup);
 router.post("/verify-otp", redirectIfAuthenticated, verifyOtp);
 router.post("/resend-otp", redirectIfAuthenticated, resendOtp);
-router.post("/login", redirectIfAuthenticated, login);
+router.post("/login", login);
 router.post("/logout", logout);
 
 router.get("/me", checkForAuthenticationCookie("token"), getCurrentUser);

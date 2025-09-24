@@ -23,8 +23,8 @@ app.use(cookieParser());
 app.use(checkForAuthenticationCookie("token"));
 
 mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 app.use('/user', userRoutes);
 app.use('/blog', blogRoutes);
@@ -32,6 +32,14 @@ app.use('/admin', adminRoutes);
 
 app.get('/', (req, res) => {
     res.send('Blogify backend is running...');
+});
+
+app.use((req, res, next) => {
+    res.status(404).json({
+        success: false,
+        error: "Resource not found",
+        message: `Cannot find ${req.originalUrl} on this server`,
+    });
 });
 
 const PORT = process.env.PORT || 5000;

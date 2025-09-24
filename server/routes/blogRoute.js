@@ -15,6 +15,7 @@ import {
     getCommentById,
     updateComment,
     deleteComment,
+    getBlogLikes,
 } from "../controllers/blogController.js";
 
 import {
@@ -41,7 +42,9 @@ router.post("/", requireAuth, upload.single("coverImage"), createBlog);
 router.get("/:id", requireAuth, getBlogById);
 router.put("/:id", requireAuth, restrictToBlogOwnerOrAdmin("id"), upload.single("coverImage"), updateBlog);
 router.delete("/:id", requireAuth, restrictToBlogOwnerOrAdmin("id"), deleteBlog);
+
 router.post("/:id/like", requireAuth, likeOrUnlikeBlog);
+router.get("/:id/likes", requireAuth, getBlogLikes);
 
 router.get("/comment/:id", requireAuth, getCommentById);
 router.post("/comment/:id", requireAuth, addComment);
