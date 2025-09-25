@@ -113,12 +113,14 @@ export async function verifyOtp(req, res)
     }
 }
 
-export async function resendOtp(req, res) 
-{
+export async function resendOtp(req, res) {
     const { email, fullName, password } = req.body;
 
-    try 
-    {
+    try {
+        if (!email || !fullName || !password) {
+            return res.status(400).json({ error: "Email, full name, and password are required." });
+        }
+
         await OTP.deleteMany({ email });
 
         const otp = generateOTP();
@@ -127,17 +129,16 @@ export async function resendOtp(req, res)
         await OTP.create({
             email,
             fullName,
-            hashedPassword:password,
+            hashedPassword: password,
             otpHash,
             expiresAt: generateExpiry(2),
         });
 
         await sendOTPEmail(email, otp);
-        return res.status(200).json({ message: "OTP resent" });
-    } 
-    catch (err) 
-    {
-        console.error(err);
+
+        return res.status(200).json({ message: "OTP resent successfully!" });
+    } catch (err) {
+        console.error("Resend OTP Error:", err);
         return res.status(500).json({ error: "Failed to resend OTP" });
     }
 }
