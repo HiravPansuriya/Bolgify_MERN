@@ -11,6 +11,7 @@ import {
     verifyOtp,
     resendOtp,
     login,
+    googleLogin, 
     logout,
     getPublicProfile,
     getProfile,
@@ -36,6 +37,7 @@ router.post("/signup", redirectIfAuthenticated, signup);
 router.post("/verify-otp", redirectIfAuthenticated, verifyOtp);
 router.post("/resend-otp", redirectIfAuthenticated, resendOtp);
 router.post("/login", login);
+router.post("/google-login", googleLogin);
 router.post("/logout", logout);
 
 router.get("/me", checkForAuthenticationCookie("token"), getCurrentUser);

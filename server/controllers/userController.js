@@ -7,6 +7,7 @@ import { sendOTPEmail } from "../services/mailer.js";
 import crypto from "crypto";
 import cloudinary from "../services/cloudinary.js";
 import { createTokenForUser } from "../services/authentication.js";
+import jwt from "jsonwebtoken";
 
 export async function getCurrentUser(req, res) 
 {
@@ -113,11 +114,14 @@ export async function verifyOtp(req, res)
     }
 }
 
-export async function resendOtp(req, res) {
+export async function resendOtp(req, res) 
+{
     const { email, fullName, password } = req.body;
 
-    try {
-        if (!email || !fullName || !password) {
+    try 
+    {
+        if (!email || !fullName || !password) 
+        {
             return res.status(400).json({ error: "Email, full name, and password are required." });
         }
 
@@ -137,7 +141,9 @@ export async function resendOtp(req, res) {
         await sendOTPEmail(email, otp);
 
         return res.status(200).json({ message: "OTP resent successfully!" });
-    } catch (err) {
+    } 
+    catch (err) 
+    {
         console.error("Resend OTP Error:", err);
         return res.status(500).json({ error: "Failed to resend OTP" });
     }
@@ -172,7 +178,7 @@ export async function login(req, res)
 
         return res.status(200).json({
             message: "Login successful",
-            token, // Send token to frontend
+            token,
             user: {
                 _id: user._id,
                 fullName: user.fullName,
@@ -185,6 +191,59 @@ export async function login(req, res)
     catch (err) 
     {
         return res.status(401).json({ error: "Invalid credentials" });
+    }
+}
+
+export async function googleLogin(req, res) 
+{
+    try 
+    {
+        const { name, email } = req.body;
+
+        if (!email) 
+        {
+            return res.status(400).json({ error: "Email is required" });
+        }
+
+        let user = await User.findOne({ email });
+
+        if (!user) 
+        {
+            user = await User.create({
+                fullName: name,
+                email,
+                isEmailVerified: true,
+                profileImageURL: "/images/default.png",
+                password: crypto.randomBytes(16).toString("hex"), // random password
+                authProvider: "google",
+            });
+        }
+
+        const token = createTokenForUser(user);
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        });
+
+        return res.status(200).json({
+            message: "Google login successful",
+            token,
+            user: {
+                _id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                profileImageURL: user.profileImageURL,
+                role: user.role,
+            },
+        });
+    } 
+    catch (err) 
+    {
+        console.error("Google Login Error:", err);
+        return res.status(500).json({ error: "Google login failed" });
     }
 }
 
