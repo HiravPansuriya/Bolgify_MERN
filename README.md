@@ -1,6 +1,6 @@
 # 📝 Blogify
 
-**Blogify** is a secure, full-stack blogging platform built with the MERN stack — MongoDB, Express, React, and Node.js. It allows users to sign up with email OTP verification, securely authenticate with JWT, create and manage blog posts, like & comment on content, and view public or private profiles — all within a beautifully styled, dark-themed user interface.
+**Blogify** is a secure, full-stack blogging platform built with the MERN stack — MongoDB, Express, React, and Node.js. It allows users to **sign up with email OTP verification**, securely authenticate with JWT, create and manage blog posts, like & comment on content, and view public or private profiles — all in a beautifully styled, dark-themed interface.
 
 ---
 
@@ -8,43 +8,52 @@
 
 ### 🔐 Authentication
 
-- Signup with **email OTP verification**
-- Secure **JWT-based login**
-- Session management with `express-session`
-- Token stored in `localStorage` or cookies
-- Protected routes with backend middleware
+- Signup with **email OTP verification** (6-digit OTP sent via email)
+- **Resend OTP** functionality with server-side validation
+- Secure **JWT-based login** with token stored in cookies/localStorage
+- Session management and **route protection** via middleware
+- OTP expiry system (2 minutes) with timer on the frontend
 
 ### 👤 User System
 
-- **Private profile** page (for logged-in users)
-- **Public profile** page viewable by others (`/user/:username`)
-- **Liked‑posts** section in the private profile (shows every post you’ve liked)
+- **Private profile** page (viewable only by the user)
+- **Public profile** page (`/user/:username`) showing posts & info
+- **Liked posts** section in private profile
+- Profile update with optional **profile image upload** via Cloudinary
+- Account deletion with cascading cleanup:
+  - Blogs, comments, likes, and profile image removal
 
 ### ✍️ Blog System
 
-- Create, edit, and delete posts
-- Like / Unlike posts (AJAX, Instagram‑style heart icon)
-  - One like per user per post
-  - Like counter visible on every card & post page
-- Commenting system (with optional nesting)
-- Role-based permissions (user/admin)
+- **CRUD operations** on posts (Create, Read, Update, Delete)
+- **Like / Unlike** functionality (AJAX-powered, Instagram-style)
+  - Animated heart icon
+  - Like counter on cards and post pages
+- **Commenting system**
+  - Nested comments support
+  - Real-time UI update after posting
+- **Role-based permissions**
+  - Only admin or post owner can edit/delete
 
 ### 🛡️ Security
 
-- **JWT validation** middleware
-- Route protection for sensitive actions:
-  - Account deletion
+- JWT authentication middleware
+- Route restrictions for sensitive operations:
   - Password change
-  - Post/comment management
-- Admin vs. user access restrictions
+  - Account deletion
+  - Blog/comment management
+- Secure cookie storage (`httpOnly`, `SameSite=Strict`)
+- Backend validations on all inputs
 
 ### 🎨 UI & Styling
 
-- Fully responsive **dark theme**:
+- **Dark theme** throughout the app
   - Dark blue gradient backgrounds
   - Blue-accented buttons and cards
-  - Styled with custom CSS and React components
-- Instagram‑like heart animation on like/unlike
+  - Clean, modern styling with custom CSS
+- Responsive design for desktop and mobile
+- Animated **OTP timer** and button enable/disable for resend
+- Informative success/error **toast notifications**
 
 ---
 
@@ -53,11 +62,11 @@
 - **Frontend**: React.js, React Router, Axios, React Toastify
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB with Mongoose
-- **Authentication**: JWT (JSON Web Token), Email OTP (via Nodemailer)
-- **File Upload**: Multer
-- **State**: Local component state (optionally Redux)
-- **Styling**: Custom CSS (Dark Mode)
-- **Environment Config**: `dotenv` for config
+- **Authentication**: JWT (JSON Web Token), Email OTP via Nodemailer
+- **File Upload**: Multer + Cloudinary
+- **State Management**: Local React state
+- **Styling**: Custom CSS (dark mode)
+- **Environment Config**: `dotenv`
 
 ---
 
