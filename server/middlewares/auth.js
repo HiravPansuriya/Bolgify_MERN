@@ -3,11 +3,27 @@ import User from "../models/user.js";
 import Blog from "../models/blog.js";
 import Comment from "../models/comment.js";
 
-export function requireAuth(req, res, next) {
-    if (!req.user) {
+export async function requireAuth(req, res, next) 
+{
+    try 
+    {
+        const token = req.cookies.token; 
+        if (!token) return res.status(401).json({ error: "Authentication required." });
+
+        const decoded = validateToken(token);
+        if (!decoded) return res.status(401).json({ error: "Invalid or expired token." });
+
+        const user = await User.findById(decoded._id);
+        if (!user) return res.status(401).json({ error: "Authentication required." });
+
+        req.user = user; 
+        next();
+    } 
+    catch(err) 
+    {
+        console.error("Auth error:", err.message);
         return res.status(401).json({ error: "Authentication required." });
     }
-    next();
 }
 
 export function checkForAuthenticationCookie(cookieName) 

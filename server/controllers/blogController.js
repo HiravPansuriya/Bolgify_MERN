@@ -1,5 +1,6 @@
 import Blog from "../models/blog.js";
 import Comment from "../models/comment.js";
+import Notification from "../models/notification.js";
 import mongoose from "mongoose";
 import cloudinary from "../services/cloudinary.js";
 
@@ -153,6 +154,17 @@ export async function likeOrUnlikeBlog(req, res) {
         }
         else {
             blog.likes.push(userId);
+
+            if (blog.createdBy.toString() !== userId.toString()) 
+            {
+                await Notification.create({
+                    user: blog.createdBy,      
+                    fromUser: userId,       
+                    type: "like",
+                    blog: blog._id,
+                    isRead: false
+                });
+            }
         }
 
         await blog.save();
@@ -246,6 +258,29 @@ export async function addComment(req, res) {
             createdBy: req.user._id,
             parentComment: parent ? parent._id : null,
         });
+
+        if (blog.createdBy.toString() !== req.user._id.toString()) {
+            await Notification.create({
+                user: blog.createdBy,
+                fromUser: req.user._id,
+                type: "comment",
+                blog: blog._id,
+                comment: newComment._id,
+                isRead: false
+            });
+        }
+
+        // ✅ Optional: notify parent comment author if it's a reply
+        if (parent && parent.createdBy.toString() !== req.user._id.toString()) {
+            await Notification.create({
+                user: parent.createdBy,
+                fromUser: req.user._id,
+                type: "comment",
+                blog: blog._id,
+                comment: newComment._id,
+                isRead: false
+            });
+        }
 
         const populatedComment = await Comment.findById(newComment._id)
             .populate("createdBy", "username profileImage");

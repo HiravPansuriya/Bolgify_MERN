@@ -89,6 +89,6 @@ userSchema.static("matchPasswordAndGenerateToken", async function(email, passwor
     return token;
 })
 
-const User = mongoose.model("user", userSchema);
+const User = mongoose.models.User || mongoose.model("user", userSchema);
 
 export default User;

@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoute.js';
 import blogRoutes from './routes/blogRoute.js';
 import adminRoutes from './routes/adminRoute.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 import { checkForAuthenticationCookie } from './middlewares/auth.js';
 
 dotenv.config();
@@ -29,6 +30,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/user', userRoutes);
 app.use('/blog', blogRoutes);
 app.use('/admin', adminRoutes);
+app.use("/notifications", notificationRoutes);
 
 app.get('/', (req, res) => {
     res.send('Blogify backend is running...');
