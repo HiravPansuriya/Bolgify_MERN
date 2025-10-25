@@ -278,12 +278,16 @@ export async function getProfile(req, res)
 {
     try 
     {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id)
+            .populate({
+                path: "savedBlogs",
+                populate: { path: "createdBy", select: "fullName profileImageURL" },
+            });
         const blogs = await Blog.find({ createdBy: req.params.id });
         const comments = await Comment.find({ createdBy: req.params.id });
         const likedBlogs = await Blog.find({ likes: req.params.id }).populate("createdBy");
 
-        return res.status(200).json({ user, blogs, comments, likedBlogs });
+        return res.status(200).json({ user, blogs, comments, likedBlogs, savedBlogs: user.savedBlogs || [], });
     } 
     catch (err) 
     {
@@ -405,5 +409,61 @@ export async function deleteProfile(req, res)
     catch (err) 
     {
         return res.status(500).json({ error: "Account deletion failed" });
+    }
+}
+
+export async function toggleSaveBlog(req, res) 
+{
+    try 
+    {
+        const userId = req.user._id;
+        const { blogId } = req.params;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) return res.status(404).json({ error: "Blog not found" });
+
+        const alreadySaved = user.savedBlogs.includes(blogId);
+
+        if(alreadySaved) 
+        {
+            user.savedBlogs.pull(blogId);
+            await user.save();
+            return res.status(200).json({ message: "Blog unsaved successfully" });
+        } 
+        else 
+        {
+            user.savedBlogs.push(blogId);
+            await user.save();
+            return res.status(200).json({ message: "Blog saved successfully" });
+        }
+    } 
+    catch(err) 
+    {
+        console.error("Save Blog Error:", err);
+        return res.status(500).json({ error: "Failed to save blog" });
+    }
+}
+
+export async function getSavedBlogs(req, res) 
+{
+    try 
+    {
+        const userId = req.user._id;
+        const user = await User.findById(userId).populate({
+            path: "savedBlogs",
+            populate: { path: "createdBy", select: "fullName profileImageURL" },
+        });
+
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        return res.status(200).json({ savedBlogs: user.savedBlogs });
+    } 
+    catch(err) 
+    {
+        console.error("Get Saved Blogs Error:", err);
+        return res.status(500).json({ error: "Failed to fetch saved blogs" });
     }
 }
