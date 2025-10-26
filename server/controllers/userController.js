@@ -170,9 +170,9 @@ export async function login(req, res)
         const token = await User.matchPasswordAndGenerateToken(email, password);
 
         res.cookie("token", token, {
-            httpOnly: true,      // Secure against XSS
+            httpOnly: true,      
             secure: false,
-            sameSite: "Strict",  // Prevent CSRF
+            sameSite: "Strict",  
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
@@ -214,7 +214,7 @@ export async function googleLogin(req, res)
                 email,
                 isEmailVerified: true,
                 profileImageURL: "/images/default.png",
-                password: crypto.randomBytes(16).toString("hex"), // random password
+                password: crypto.randomBytes(16).toString("hex"), 
                 authProvider: "google",
             });
         }

@@ -47,8 +47,8 @@ const userSchema = new mongoose.Schema({
 
 }, {timestamps: true} );
 
-userSchema.pre("save", function(next) {
-    
+userSchema.pre("save", function(next) 
+{
     const user = this;
 
     if(!user.isModified("password"))
@@ -65,8 +65,8 @@ userSchema.pre("save", function(next) {
     next();
 });
 
-userSchema.static("matchPasswordAndGenerateToken", async function(email, password) {
-
+userSchema.static("matchPasswordAndGenerateToken", async function(email, password) 
+{
     const user = await this.findOne({email});
 
     if(!user)

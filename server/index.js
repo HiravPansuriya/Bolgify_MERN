@@ -14,8 +14,8 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:3000", // Allow only frontend origin
-    credentials: true,               // Allow cookies and authentication headers
+    origin: "http://localhost:3000",
+    credentials: true,               
 }));
 
 app.use(express.json());

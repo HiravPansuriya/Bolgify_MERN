@@ -62,13 +62,11 @@ export function restrictTo( roles)
     {
         if(!req.user)
         {
-            // return res.redirect("/user/signin");
             return res.status(401).json({ error: "Authentication required." });
         }
 
         if( !roles.includes(req.user.role) )
         {
-            // return res.redirect(`/?error=${encodeURIComponent("Unauthorized: You don't have permission to access this resource.")}`);
             return res.status(403).json({ error: "Access denied: insufficient permissions." });
         }
 
@@ -80,7 +78,6 @@ export function redirectIfAuthenticated(req, res, next)
 {
     if(req.user) 
     {
-        // return res.redirect("/");
         return res.status(400).json({ error: "Already logged in." });
     }
 
@@ -93,7 +90,6 @@ export function restrictToSelf(paramName = 'id')
     {
         if (!req.user) 
         {
-            // return res.redirect("/user/signin");
             return res.status(401).json({ error: "Authentication required." });
         }
 
@@ -102,7 +98,6 @@ export function restrictToSelf(paramName = 'id')
 
         if (requestedUserId !== loggedInUserId) 
         {
-            // return res.redirect(`/?error=${encodeURIComponent("Forbidden: You can't access another user's data.")}`);
             return res.status(403).json({ error: "Access denied: not your resource." });
         }
 
@@ -116,14 +111,12 @@ export function restrictToBlogOwnerOrAdmin(paramName = "id")
     {
         if (!req.user)
         {
-            // return res.redirect("/user/signin");
             return res.status(401).json({ error: "Authentication required." });
         } 
 
         const blog = await Blog.findById(req.params[paramName]);
         if (!blog)
         {
-            // return res.status(404).send("Blog not found");
             return res.status(404).json({ error: "Blog not found." });
         } 
 
@@ -132,7 +125,6 @@ export function restrictToBlogOwnerOrAdmin(paramName = "id")
 
         if (!isOwner && !isAdmin) 
         {
-            // return res.redirect(`/?error=${encodeURIComponent("Forbidden: Not your blog and you're not an admin.")}`);
             return res.status(403).json({ error: "Access denied: not blog owner or admin." });
         }
 
@@ -146,14 +138,12 @@ export function restrictToCommentOwnerOrAdmin(paramName = "id")
     {
         if (!req.user)
         {
-            // return res.redirect("/user/signin");
             return res.status(401).json({ error: "Authentication required." });
         } 
 
         const comment = await Comment.findById(req.params[paramName]);
         if (!comment)
         {
-            // return res.status(404).send("Comment not found");
             return res.status(404).json({ error: "Comment not found." });
         } 
 
@@ -162,7 +152,6 @@ export function restrictToCommentOwnerOrAdmin(paramName = "id")
 
         if (!isOwner && !isAdmin) 
         {
-            // return res.redirect(`/?error=${encodeURIComponent("Forbidden: Not your comment and you're not an admin.")}`);
             return res.status(403).json({ error: "Access denied: not comment owner or admin." });
         }
 
