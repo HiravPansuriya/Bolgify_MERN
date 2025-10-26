@@ -9,7 +9,7 @@ export const getNotifications = async (req, res) => {
             return res.status(401).json({ error: "Authentication required." });
         }
 
-        const notifications = await Notification.find({ user: req.user._id })
+        const notifications = await Notification.find({ user: req.user._id, isRead: false })
             .sort({ createdAt: -1 }) 
             .populate("fromUser", "fullName profileImageURL")
             .populate("blog", "title coverImageURL")
@@ -43,8 +43,7 @@ export const markNotificationRead = async (req, res) => {
             return res.status(403).json({ error: "Not authorized" });
         }
 
-        notification.isRead = true;
-        await notification.save();
+        await Notification.findByIdAndDelete(id);
 
         return res.status(200).json({ message: "Notification marked as read", notification });
     } 
