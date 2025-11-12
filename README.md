@@ -91,9 +91,10 @@ It offers seamless blogging, user interaction, and real-time engagement — all 
 
 ## 📂 Project Structure
 
-```
+```bash
 
 BLOGIFY_MERN/
+|
 ├── client/                      # React Frontend
 │   ├── src/
 │   │   ├── components/          # Navbar, BlogCard, Modals, etc.
@@ -101,8 +102,10 @@ BLOGIFY_MERN/
 │   │   ├── pages/               # Login, Signup, Profile, BlogPage, etc.
 │   │   ├── utils/               # Helper functions (avatar generator, etc.)
 |   |   ├── api/                 # Axios Config 
+│   |   ├── .env.example
 │   │   └── App.jsx              # Routes setup
-│   └── package.json
+│   ├── public/                  # Static assets
+│   └── index.html
 │
 ├── server/                      # Express Backend
 │   ├── controllers/             # Business logic (user, blog, comment, notify)
@@ -110,11 +113,124 @@ BLOGIFY_MERN/
 │   ├── models/                  # Mongoose schemas
 │   ├── routes/                  # RESTful API routes
 │   ├── services/                # Helper services (email, tokens)
-│   ├── .env
+│   ├── .env.example
 │   └── index.js                 # Entry point
 │
-├── .gitignore
-├── README.md
-└── package.json
-
+├── db-backup/                   # MongoDB dump backup (optional)
+└── README.md                    # Project documentation
 ```
+
+---
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- MongoDB (v4.4 or higher)
+- npm or yarn package manager
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/HiravPansuriya/Bolgify_MERN.git
+cd Blogify_MERN
+```
+
+### 2. Backend Installation
+
+```bash
+cd server
+npm install
+```
+
+### 3. Frontend Installation
+
+```bash
+cd client
+npm install
+```
+
+### 4. Environment Variables Setup
+
+#### Backend (.env file in server folder)
+
+Create a `.env` file in the `server` directory with the following variables:
+
+```env
+# Database Configuration
+MONGO_URI=mongodb://127.0.0.1:27017/blogify_MERN
+
+# Server Configuration
+PORT=8000
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key_here
+
+# Session Configuration
+SESSION_SECRET=your_session_secret_key
+
+# Email Configuration
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_password
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
+
+#### Frontend (.env file in client folder)
+
+Create a `.env` file in the `client` directory:
+
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+```
+
+### 5. Database Setup
+
+#### Option 1: Restore from Backup (Recommended)
+
+If you have the database backup included in the project:
+
+```bash
+# Navigate to project root directory
+cd Blogify_MERN
+
+# Restore the database
+mongorestore --db blogify_MERN ./db-backup/blogify_MERN
+```
+
+#### Option 2: Fresh Database Setup
+
+If no backup is available, the application will create the necessary collections automatically when you first run it.
+
+---
+
+## 🏃 Running the Project
+
+### Start Backend Server
+
+```bash
+cd server
+npm run dev
+```
+
+The backend server will start on `http://localhost:8000`
+
+### Start Frontend Development Server
+
+```bash
+cd client
+npm run dev
+```
+
+The frontend will start on `http://localhost:3000`
+
+### Access the Application
+
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000/`
+
+---
