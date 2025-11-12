@@ -1,0 +1,186 @@
+.navbar-blue {
+    position: sticky; 
+    top: 0;
+    z-index: 1050; 
+    background: linear-gradient(90deg, #0d1117, #0a1a30, #001f3f);
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+    box-shadow: 0px 0.5px 2px rgba(102, 217, 255, 0.5);
+}
+
+body.scrolled .navbar-blue {
+    box-shadow: 0px 2px 8px rgba(102, 217, 255, 0.3);
+}
+
+.navbar-brand img {
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.1);
+}
+
+.navbar-blue .navbar-brand span {
+    color: #ffffff !important;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.navbar-blue .nav-link {
+    color: white !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 8px 15px;
+}
+
+.navbar-blue .nav-link:hover,
+.navbar-blue .nav-link.active {
+    color: #66d9ff !important;
+}
+
+.navbar-blue .btn-outline-light {
+    border: 1px solid #66d9ff;
+    color: #66d9ff;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    padding: 5px 15px;
+}
+
+.navbar-blue .btn-outline-light:hover {
+    background-color: #66d9ff;
+    color: black;
+}
+
+.navbar-blue .dropdown-menu {
+    background-color: #001f3f;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    min-width: 180px;
+}
+
+.navbar-blue .dropdown-item {
+    color: white;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-blue .dropdown-item:hover {
+    background-color: #66d9ff;
+    color: black;
+}
+
+.navbar-blue .dropdown-menu .dropdown-divider {
+    border-top: 1px solid #66d9ff;
+    opacity: 0.7;
+    margin: 5px 0;
+}
+
+.searchS {
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.searchS input {
+    height: 40px;
+}
+
+.searchS .btn {
+    height: 40px;
+    font-weight: 500;
+}
+
+.form-control {
+    background-color: #0f172a;
+    color: white;
+    border: 1px solid #334155;
+    padding: 10px;
+    margin-top: 1.7px;
+    margin-bottom: 1.7px;
+    transition: all 0.3s ease;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+}
+
+form[role="search"] input:focus {
+    background-color: #0a1a30;
+    border: 1px solid #66d9ff;
+    outline: none !important;
+    box-shadow: 0 0 4px rgba(102, 217, 255, 0.5);
+}
+
+@media (max-width: 992px) {
+    .searchS {
+        padding-left: 0;
+        width: 100%;
+    }
+
+    .searchS input {
+        width: 100%;
+    }
+
+    .searchS .btn {
+        width: 100px;
+    }
+}
+
+.notification-bell i {
+    color: #FFD700;
+    transition: color 0.3s ease;
+    margin-right: 25px;
+}
+
+.notification-bell i:hover {
+    color: #FFD700;
+    transition: color 0.3s ease;
+}
+
+.number {
+    margin-left: -20px;
+    position: absolute;
+}
+
+.notification-item.unread {
+    background-color: #00366c;
+    font-weight: 500;
+}
+
+.notification-item {
+    background-color: #001f3f;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.notification-item:hover {
+    background-color: #001931; 
+}
+
+.notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: #f1f1f1;
+}
+
+.notification-content strong {
+    color: #ffd700; 
+}
+
+.notification-content .text-muted {
+    font-size: 0.75rem;
+    color: #b0b0b0;
+}
+
+.notification-item img {
+    border: 2px solid #ffd700;
+}

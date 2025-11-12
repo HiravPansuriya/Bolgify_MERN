@@ -1,6 +1,7 @@
 # 📝 Blogify
 
-**Blogify** is a secure, full-stack blogging platform built with the MERN stack — MongoDB, Express, React, and Node.js. It allows users to **sign up with email OTP verification**, securely authenticate with JWT, create and manage blog posts, like & comment on content, and view public or private profiles — all in a beautifully styled, dark-themed interface.
+**Blogify** is a modern, secure, and feature-rich blogging platform built with the **MERN stack (MongoDB, Express, React, Node.js)**.  
+It offers seamless blogging, user interaction, and real-time engagement — all wrapped in a dark, elegant, and responsive interface.
 
 ---
 
@@ -8,65 +9,83 @@
 
 ### 🔐 Authentication
 
-- Signup with **email OTP verification** (6-digit OTP sent via email)
-- **Resend OTP** functionality with server-side validation
-- Secure **JWT-based login** with token stored in cookies/localStorage
-- Session management and **route protection** via middleware
-- OTP expiry system (2 minutes) with timer on the frontend
+- **Signup with Email OTP Verification**
+  - 6-digit OTP sent securely via email
+  - Resend OTP with server-side validation
+  - OTP expires after 2 minutes with frontend timer
+- **JWT-based Login**
+  - Secure authentication using JWT stored in `httpOnly` cookies
+  - Session management and protected routes using middleware
+- **Google Authentication**
+  - Auto-register new users or login existing ones
+  - Generates default avatar for new Google users
 
 ### 👤 User System
 
-- **Private profile** page (viewable only by the user)
-- **Public profile** page (`/user/:username`) showing posts & info
-- **Liked posts** section in private profile
-- Profile update with optional **profile image upload** via Cloudinary
-- Account deletion with cascading cleanup:
-  - Blogs, comments, likes, and profile image removal
+- **Private Profile**
+  - Manage your blogs, likes, saved posts, and personal info
+- **Public Profile**
+  - View other users’ blogs
+- **Profile Management**
+  - Update name, and profile image (via **Cloudinary**)
+  - Auto-generated avatars for users without uploaded images
+- **Account Deletion**
+  - Cascading cleanup (blogs, comments, saved posts, and notifications)
 
 ### ✍️ Blog System
 
-- **CRUD operations** on posts (Create, Read, Update, Delete)
-- **Like / Unlike** functionality (AJAX-powered, Instagram-style)
-  - Animated heart icon
-  - Like counter on cards and post pages
-- **Commenting system**
-  - Nested comments support
-  - Real-time UI update after posting
-- **Role-based permissions**
-  - Only admin or post owner can edit/delete
+- **Full CRUD Operations**
+  - Create, Read, Update, Delete
+- **Save Blog**
+  - Save blogs for later reading (bookmark feature)
+  - Access saved blogs in your private profile
+- **Like / Unlike System**
+  - Real-time AJAX-like update without page reload
+  - Animated heart icon and live like counter
+- **Comment System**
+  - Real-time comment addition and deletion
+- **Role-Based Permissions**
+  - Only blog owners or admins can edit/delete blogs
+
+### 🔔 Notifications
+
+- **Real-Time Notifications** using Context API
+  - Get notified instantly when someone likes or comments on blog
+  - Unread notifications shown in dropdown
+  - Once read, they are **removed from both UI and database**
 
 ### 🛡️ Security
 
-- JWT authentication middleware
-- Route restrictions for sensitive operations:
-  - Password change
-  - Account deletion
-  - Blog/comment management
-- Secure cookie storage (`httpOnly`, `SameSite=Strict`)
-- Backend validations on all inputs
+- **JWT-based Authentication & Authorization**
+- **Protected Routes** for sensitive actions (like, comment, delete)
+- **Sanitized Inputs & Backend Validation**
+- **Secure Cookies** (`httpOnly`, `SameSite=Strict`)
+- **Cascading Deletes** on user removal
 
 ### 🎨 UI & Styling
 
-- **Dark theme** throughout the app
-  - Dark blue gradient backgrounds
-  - Blue-accented buttons and cards
-  - Clean, modern styling with custom CSS
-- Responsive design for desktop and mobile
-- Animated **OTP timer** and button enable/disable for resend
-- Informative success/error **toast notifications**
+- **Dark Theme** with modern, gradient design
+- **Responsive Layout** for desktop and mobile
+- **Interactive Animations**
+  - Like animation
+  - OTP resend timer
+- **Custom CSS Styling** with blue-accented tones
+- **Toast Notifications** for instant feedback (success/error/info)
 
 ---
 
 ## 🧑‍💻 Tech Stack
 
-- **Frontend**: React.js, React Router, Axios, React Toastify
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB with Mongoose
-- **Authentication**: JWT (JSON Web Token), Email OTP via Nodemailer
-- **File Upload**: Multer + Cloudinary
-- **State Management**: Local React state
-- **Styling**: Custom CSS (dark mode)
-- **Environment Config**: `dotenv`
+| Layer | Technology |
+|-------|-------------|
+| **Frontend** | React.js, React Router, Axios, React Toastify |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB (Mongoose ORM) |
+| **Auth** | JWT, Email OTP (Nodemailer), Google OAuth |
+| **File Storage** | Cloudinary + Multer |
+| **State Management** | React Context API |
+| **Styling** | Custom CSS (Dark Mode) |
+| **Environment Config** | dotenv |
 
 ---
 
@@ -74,26 +93,28 @@
 
 ```
 
-BOLGIFY_MERN/
-├── client/                  # React frontend
+BLOGIFY_MERN/
+├── client/                      # React Frontend
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Route-level components (Login, Signup, etc.)
-│   │   └── App.js           # React Router setup
-│   └── package.json         # Frontend dependencies
+│   │   ├── components/          # Navbar, BlogCard, Modals, etc.
+│   │   ├── context/             # Auth, Notification, etc.
+│   │   ├── pages/               # Login, Signup, Profile, BlogPage, etc.
+│   │   ├── utils/               # Helper functions (avatar generator, etc.)
+|   |   ├── api/                 # Axios Config 
+│   │   └── App.jsx              # Routes setup
+│   └── package.json
 │
-├── server/                  # Node.js backend
-│   ├── models/              # Mongoose models
-│   ├── routes/              # Express routes
-│   ├── middlewares/         # Auth and error middleware
-│   ├── controllers/         # Logic for routes
-│   ├── services/            # Email, token, or helper logic
-│   ├── uploads/             # Static files (images, etc.)
-│   ├── .env                 # Environment variables
-│   └── index.js             # Express entry point
+├── server/                      # Express Backend
+│   ├── controllers/             # Business logic (user, blog, comment, notify)
+│   ├── middlewares/             # Auth & error middleware
+│   ├── models/                  # Mongoose schemas
+│   ├── routes/                  # RESTful API routes
+│   ├── services/                # Helper services (email, tokens)
+│   ├── .env
+│   └── index.js                 # Entry point
 │
 ├── .gitignore
 ├── README.md
-└── package.json             # If using root-level scripts
+└── package.json
 
 ```
