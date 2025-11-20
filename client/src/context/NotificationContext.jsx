@@ -42,7 +42,7 @@ export const NotificationProvider = ({ children }) => {
         try 
         {
             await markNotificationAsRead(id);
-            setNotifications(prev => prev.filter(n => n._id !== id)); // ✅ remove read ones
+            setNotifications(prev => prev.filter(n => n._id !== id));
             setUnreadCount(prev => Math.max(prev - 1, 0));
         } 
         catch(err) 
